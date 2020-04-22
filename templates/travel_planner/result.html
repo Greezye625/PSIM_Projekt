@@ -1,6 +1,7 @@
 <!doctype html>
 {% extends "travel_planner/base.html" %}
 {#{% load my_extras %}#}
+{% load static %}
 
 {% block body_block %}
 
@@ -9,6 +10,12 @@
             <h1>Welcome to Result Page!</h1>
             <p></p>
             <h3>You got here by clicking a link on top bar, eventualy you'll be redirected here to see your planned journey</h3>
+
+            <h4>Here's an example image:</h4>
+
+            <div class="col-md-120 px-0">
+                <img class="img-fluid" src="{% static "images/result_map.png" %}" alt="WHOOOOPS something went wrong">
+            </div>
         </div>
     </div>
 
