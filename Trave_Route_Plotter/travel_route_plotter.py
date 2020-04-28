@@ -5,8 +5,6 @@ import json
 from mpl_toolkits.basemap import Basemap
 import matplotlib.colors as colors
 import io
-import urllib
-import base64
 
 
 class MapPoint:
