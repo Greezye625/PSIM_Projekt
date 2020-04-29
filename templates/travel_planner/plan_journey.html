@@ -8,7 +8,16 @@
         <div class="jumbotron">
             <h1>Welcome to Plan Journey page!</h1>
             <p></p>
-            <h3>You got here by clicking a link on top bar, eventualy you'll be entering your journey's parameters here</h3>
+{#            <h3>You got here by clicking a link on top bar, eventualy you'll be entering your journey's parameters here</h3>#}
+
+            <form class="" action="" method="post">
+                {{ form.as_p }}
+                {% csrf_token %}
+
+                <input type="submit" class="btn btn-primary" value="Submit">
+
+            </form>
+
         </div>
     </div>
 

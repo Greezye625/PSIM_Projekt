@@ -9,10 +9,22 @@
         <div class="jumbotron">
             <h1>Welcome to Result Page!</h1>
             <p></p>
-            <h3>You got here by clicking a link on top bar, eventualy you'll be redirected here to see your planned journey</h3>
+            <h>Order of visiting:</h>
+            <p></p>
+            {% if places_list %}
+                <ol>
+                    {% for place in places_list %}
 
-            <h4>Here's an example image:</h4>
+                        <li>{{ place }}</li>
 
+                    {% endfor %}
+                </ol>
+
+            {% else %}
+                <p>NO PLACES TO VISIT :(</p>
+            {% endif %}
+
+            <p></p>
             <div class="col-md-120 px-0">
                 <img class="img-fluid" src="{% static "images/result_map.png" %}" alt="WHOOOOPS something went wrong">
             </div>

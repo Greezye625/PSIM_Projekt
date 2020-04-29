@@ -51,7 +51,11 @@ def create_map_with_points(map_points_list: list):
     lat = [points[key][1] for key in points]
 
     x, y = m(lat, lon)
-    m.scatter(x, y, zorder=5, s=200, color="#DE1D1D", marker="^")
+    m.scatter(x, y, zorder=5, s=20, color="#DE1D1D", marker=".")
+
+    for i, point in enumerate(map_points_list):
+        plt.annotate(f"{i+1}. {point.Name}", (x[i], y[i]))
+
     return m, lon, lat
 
 
