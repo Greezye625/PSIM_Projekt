@@ -20,4 +20,4 @@ class TravelRoute(models.Model):
     Route = models.CharField(max_length=1536)
 
     def __str__(self):
-        return f"{self.User.Login}: {self.Start_point} - ... - {self.End_point}"
+        return f"{self.Start_point} - ... - {self.End_point}"
