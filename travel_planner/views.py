@@ -2,7 +2,7 @@ from django.shortcuts import render
 from Trave_Route_Plotter import travel_route_plotter
 import os
 from travel_planner.forms import NewTravelRouteForm
-
+import re
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULT_IMG_DIR = os.path.join(BASE_DIR, 'static', 'images')
@@ -16,7 +16,6 @@ def home(request):
 
 
 def plan_journey(request):
-
     form = NewTravelRouteForm()
 
     if request.method == "POST":
@@ -32,12 +31,11 @@ def plan_journey(request):
 
 
 def result(request):
-
     startpoint = request.POST['Start_point']
     places_list = [startpoint]
 
     if request.POST['Mid_points']:
-        midpoints = request.POST['Mid_points'].split(",")
+        midpoints = re.split(r"[,.\-_] *", request.POST['Mid_points'])
         places_list += midpoints
 
     endpoint = request.POST['End_point']
@@ -50,4 +48,3 @@ def result(request):
 
     places_dict = {'places_list': places_list}
     return render(request, 'travel_planner/result.html', context=places_dict)
-
