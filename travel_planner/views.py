@@ -3,6 +3,7 @@ from Trave_Route_Plotter import travel_route_plotter
 import os
 from travel_planner.forms import NewTravelRouteForm
 import re
+from travel_planner.models import TravelRoute
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULT_IMG_DIR = os.path.join(BASE_DIR, 'static', 'images')
@@ -43,6 +44,10 @@ def result(request):
 
     #
     plotted_map, places_list = travel_route_plotter.get_map_with_roads_as_basemap_graph(places_list)
+
+    last = TravelRoute.objects.last()
+    last.Route = places_list
+    last.save()
 
     plotted_map.savefig(os.path.join(RESULT_IMG_DIR, "result_map.png"), bbox_inches='tight', pad_inches=0)
 
