@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import json
 from mpl_toolkits.basemap import Basemap
 import matplotlib.colors as colors
-import io
+from geopy.distance import geodesic
+from Trave_Route_Plotter.tsp_calculation import travellingSalesmanProblem
 
 
 class MapPoint:
@@ -12,12 +13,17 @@ class MapPoint:
         self.Name = Name
         self.Latitude, self.Longitude = get_latitude_and_longitude_for_location(self.Name)
 
+    def get_geolocation(self):
+        return self.Latitude, self.Longitude
+
 
 def get_latitude_and_longitude_for_location(location_name: str):
     geolocator = Nominatim(user_agent="PSIM")
     location = geolocator.geocode(location_name)
 
     return location.latitude, location.longitude
+
+
 
 
 def draw_map(map_to_draw):
@@ -37,13 +43,14 @@ def draw_map(map_to_draw):
 
 
 def find_border_values_for_map_corners(points_list: list):
-    points_list.sort(key=(lambda x: x.Latitude))
-    min_lat_point, max_lat_point = points_list[0], points_list[-1]
 
-    points_list.sort(key=(lambda x: x.Longitude))
-    min_lon_point, max_lon_point = points_list[0], points_list[-1]
+    tmp_points_list = sorted(points_list,key=(lambda x: x.Latitude))
+    min_lat_point, max_lat_point = tmp_points_list[0], tmp_points_list[-1]
 
-    return max_lat_point.Latitude+2, max_lon_point.Longitude+2, min_lat_point.Latitude-2, min_lon_point.Longitude-2
+    tmp_points_list.sort(key=(lambda x: x.Longitude))
+    min_lon_point, max_lon_point = tmp_points_list[0], tmp_points_list[-1]
+
+    return max_lat_point.Latitude+1, max_lon_point.Longitude+2, min_lat_point.Latitude-1, min_lon_point.Longitude-2
 
 
 def create_map_with_points(map_points_list: list):
@@ -66,7 +73,10 @@ def create_map_with_points(map_points_list: list):
     m.scatter(x, y, zorder=5, s=20, color="#DE1D1D", marker=".")
 
     for i, point in enumerate(map_points_list):
-        plt.annotate(f"{i+1}. {point.Name}", (x[i], y[i]))
+        try:
+            plt.annotate(f"{i+1}. {point.Name}", (x[i], y[i]))
+        except:
+            pass
 
     return m, lon, lat
 
@@ -78,32 +88,84 @@ def create_map_with_roads(map_points_list: list):
         x, y = m.gcpoints(lat[index], lon[index], lat[index + 1], lon[index + 1], 500)
         plt.plot(x, y, color="#E59D59", linewidth=3)
 
+    if len(map_points_list) > len(lon):
+        x, y = m.gcpoints(lat[-1], lon[-1], lat[0], lon[0], 500)
+        plt.plot(x, y, color="#E59D59", linewidth=3)
+
     return m
 
 
-def main():
-    # places_list = ["New York", "Washington DC", "Los Angeles", "San Francisco"]
-    places_list = ["Wrocław", "Gdańsk", "Łódź", "Poznań", "Warszawa", "Opole"]
-    map_points_list = [MapPoint(name) for name in places_list]
-    # map_to_draw = create_map_with_points(places_list)
-    map_to_draw = create_map_with_roads(map_points_list)
-    draw_map(map_to_draw)
+
+def create_distance_matrix(map_points: list):
+    distance_matrix = []
+
+    for start_point in map_points:
+
+        start_distance_list = []
+
+        for end_point in map_points:
+            assert isinstance(start_point, MapPoint)
+            assert isinstance(end_point, MapPoint)
+
+            if start_point is end_point:
+                start_distance_list.append(0)
+            else:
+                distance = geodesic(start_point.get_geolocation(), end_point.get_geolocation()).kilometers
+                start_distance_list.append(distance)
+
+        distance_matrix.append(start_distance_list)
+
+
+    return distance_matrix
 
 
 def get_places_sorted_for_best_route(places_list):
+
+    if places_list[0] == places_list[-1]:
+        places_list.pop(-1)
+        round_trip = True
+    else:
+        round_trip = False
+
     map_points_list = [MapPoint(name) for name in places_list]
 
 
+    distance_matrix = create_distance_matrix(map_points_list)
 
-    return map_points_list
+    distance, order_of_visiting = travellingSalesmanProblem(matrix=distance_matrix,
+                                                            start_point=0,
+                                                            round_trip=round_trip)
+
+    ordered_places_list = []
+
+    for i in order_of_visiting:
+        ordered_places_list.append(map_points_list[i])
+
+
+    return ordered_places_list
 
 
 def get_map_with_roads_as_basemap_graph(places_list: list):
     sorted_map_points_list = get_places_sorted_for_best_route(places_list)
+
+
     map_to_draw = create_map_with_roads(sorted_map_points_list)
     plotted_map = draw_map(map_to_draw)
 
-    return plotted_map
+    return plotted_map, [point.Name for point in sorted_map_points_list]
+
+
+
+def main():
+    # places_list = ["New York", "Washington DC", "Los Angeles", "San Francisco"]
+    places_list = ["Wrocław", "Gdańsk", "Łódź", "Poznań", "Warszawa", "Opole", "Wrocław"]
+
+    sorted_map_points_list = get_places_sorted_for_best_route(places_list)
+
+
+    map_to_draw = create_map_with_roads(sorted_map_points_list)
+    draw_map(map_to_draw)
+
 
 
 if __name__ == '__main__':

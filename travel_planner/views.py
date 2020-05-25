@@ -42,7 +42,7 @@ def result(request):
     places_list.append(endpoint)
 
     #
-    plotted_map = travel_route_plotter.get_map_with_roads_as_basemap_graph(places_list)
+    plotted_map, places_list = travel_route_plotter.get_map_with_roads_as_basemap_graph(places_list)
 
     plotted_map.savefig(os.path.join(RESULT_IMG_DIR, "result_map.png"), bbox_inches='tight', pad_inches=0)
 
