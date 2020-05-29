@@ -1,15 +1,19 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 # Create your models here.
 
 
-class User(models.Model):
-    Login = models.CharField(max_length=264)
-    Password = models.CharField(max_length=264)
-
-    def __str__(self):
-        return f'{self.Login}'
+# class UserProfile(models.Model):
+#
+#     user = models.OneToOneField(User, models.CASCADE)
+#
+#     dummyfield = models.CharField(max_length=264)
+#
+#
+#     def __str__(self):
+#         return self.user.username
 
 
 class TravelRoute(models.Model):

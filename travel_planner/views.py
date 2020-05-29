@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from Trave_Route_Plotter import travel_route_plotter
 import os
-from travel_planner.forms import NewTravelRouteForm
+from travel_planner.forms import NewTravelRouteForm, UserForm
 import re
 from travel_planner.models import TravelRoute
 
@@ -14,6 +14,36 @@ RESULT_IMG_DIR = os.path.join(BASE_DIR, 'static', 'images')
 
 def home(request):
     return render(request, 'home.html')
+
+
+def registration(request):
+
+    registered = False
+
+    if request.method == "POST":
+        user_form = UserForm(request.POST)
+
+        if user_form.is_valid():
+
+            user = user_form.save()
+            user.set_password(user.password)
+            user.save()
+
+            registered = True
+
+        else:
+            print(user_form.errors)
+
+    else:
+        user_form = UserForm()
+
+
+    return render(request, 'travel_planner/registration.html', context={'user_form': user_form,
+                                                                        'registered': registered})
+
+
+def login(request):
+    return render(request, 'travel_planner/login.html')
 
 
 def plan_journey(request):
