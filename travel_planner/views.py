@@ -4,20 +4,29 @@ import os
 from travel_planner.forms import NewTravelRouteForm, UserForm
 import re
 from travel_planner.models import TravelRoute
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib.auth import authenticate, login, logout
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULT_IMG_DIR = os.path.join(BASE_DIR, 'static', 'images')
 
 
 # Create your views here.
-# CURRENT_USER =
 
 def home(request):
     return render(request, 'home.html')
 
 
-def registration(request):
 
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('home'))
+
+
+def registration(request):
     registered = False
 
     if request.method == "POST":
@@ -42,10 +51,8 @@ def registration(request):
                                                                         'registered': registered})
 
 
-def login(request):
-    return render(request, 'travel_planner/login.html')
 
-
+@login_required
 def plan_journey(request):
     form = NewTravelRouteForm()
 
@@ -53,6 +60,7 @@ def plan_journey(request):
         form = NewTravelRouteForm(request.POST)
 
         if form.is_valid():
+            form.instance.User = request.user
             form.save(commit=True)
             return result(request)
         else:
@@ -61,6 +69,8 @@ def plan_journey(request):
     return render(request, 'travel_planner/plan_journey.html', context={'form': form})
 
 
+
+@login_required
 def result(request):
     startpoint = request.POST['Start_point']
     places_list = [startpoint]
@@ -83,3 +93,29 @@ def result(request):
 
     places_dict = {'places_list': places_list}
     return render(request, 'travel_planner/result.html', context=places_dict)
+
+
+
+def user_login(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect(reverse('travel_planner:plan_journey'))
+
+            else:
+                return HttpResponse("Account not active")
+
+        else:
+            print("Someone tried to login and failed")
+            print(f"Username: {username}\npassword {password}")
+            return HttpResponse("Invalid login info")
+
+    else:
+        return render(request, 'travel_planner/login.html', context={})
+

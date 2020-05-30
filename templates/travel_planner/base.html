@@ -25,17 +25,25 @@
                 <li class="nav-item ">
                     <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
                 </li>
+
+                {% if user.is_authenticated %}
                 <li class="nav-item ">
                     <a class="nav-link" href="{% url 'travel_planner:plan_journey' %}">Planner</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'travel_planner:result' %}">Results</a>
-                </li>
+                {% endif %}
+
+{#                <li class="nav-item">#}
+{#                    <a class="nav-link" href="{% url 'travel_planner:result' %}">Results</a>#}
+{#                </li>#}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'travel_planner:registration' %}">Registration</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'travel_planner:login' %}">Login</a>
+                    {% if user.is_authenticated %}
+                        <a class="nav-link" href="{% url 'travel_planner:user_logout' %}">Log out</a>
+                    {% else %}
+                        <a class="nav-link" href="{% url 'travel_planner:user_login' %}">Login</a>
+                    {% endif %}
                 </li>
             </ul>
         </div>
