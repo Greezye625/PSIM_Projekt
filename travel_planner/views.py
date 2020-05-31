@@ -131,7 +131,7 @@ def user_login(request):
                 login(request, user)
                 mobile = request.POST.get('mobile')
                 if mobile:
-                    return HttpResponse(user)
+                    return HttpResponse(f"Logged In,{user}")
                 else:
                     return HttpResponseRedirect(reverse('travel_planner:plan_journey'))
 
