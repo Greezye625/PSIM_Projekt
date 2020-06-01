@@ -108,6 +108,7 @@ def result(request):
         sorted_route_msg = ''
         for point in places_list:
             sorted_route_msg += f'{point},'
+        sorted_route_msg = sorted_route_msg[:-1]
 
         return HttpResponse(sorted_route_msg)
 
