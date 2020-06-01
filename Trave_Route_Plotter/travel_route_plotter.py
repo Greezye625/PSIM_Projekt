@@ -30,11 +30,26 @@ def draw_map(map_to_draw):
     if isinstance(map_to_draw, tuple):
         map_to_draw = map_to_draw[0]
 
-    map_to_draw.drawmapboundary(fill_color='#a2e8d9')
-    map_to_draw.fillcontinents(color='#72c963', lake_color='#00ccff')
-    map_to_draw.drawcountries(color='#585858', linewidth=3)
-    map_to_draw.drawstates(linewidth=1)
-    map_to_draw.drawcoastlines()
+    try:
+        map_to_draw.drawmapboundary(fill_color='#a2e8d9')
+    except:
+        pass
+    try:
+        map_to_draw.fillcontinents(color='#72c963', lake_color='#00ccff')
+    except:
+        pass
+    try:
+        map_to_draw.drawcountries(color='#585858', linewidth=3)
+    except:
+        pass
+    try:
+        map_to_draw.drawstates(linewidth=1)
+    except:
+        pass
+    try:
+        map_to_draw.drawcoastlines()
+    except:
+        pass
 
     if __name__ == '__main__':
         plt.show()
@@ -158,7 +173,7 @@ def get_map_with_roads_as_basemap_graph(places_list: list):
 
 def main():
     # places_list = ["New York", "Washington DC", "Los Angeles", "San Francisco"]
-    places_list = ["Wrocław", "Gdańsk", "Łódź", "Poznań", "Warszawa", "Opole", "Wrocław"]
+    places_list = ["katowice", "wrocław", "kraków", "warszawa", "opole"]
 
     sorted_map_points_list = get_places_sorted_for_best_route(places_list)
 

@@ -7,9 +7,14 @@ from sys import maxsize
 
 
 def travellingSalesmanProblem(matrix: list, start_point: int, round_trip: bool):
-    # store all vertex apart from source vertex
+    # store all vertex apart from source and end vertex
     vertex = []
-    for i in range(len(matrix)):
+    vertex_len = len(matrix)
+
+    if not round_trip:
+        vertex_len -= 1
+
+    for i in range(vertex_len):
         if i != start_point:
             vertex.append(i)
 
@@ -29,6 +34,8 @@ def travellingSalesmanProblem(matrix: list, start_point: int, round_trip: bool):
 
         if round_trip:
             current_pathweight += matrix[k][start_point]
+        else:
+            current_pathweight += matrix[k][vertex_len]
 
         # update minimum
         if current_pathweight < min_path_cost:
@@ -42,6 +49,8 @@ def travellingSalesmanProblem(matrix: list, start_point: int, round_trip: bool):
 
     if round_trip:
         min_path.append(0)
+    else:
+        min_path.append(vertex_len)
 
     return min_path_cost, min_path
 

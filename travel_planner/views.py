@@ -84,7 +84,6 @@ def plan_journey(request):
     return render(request, 'travel_planner/plan_journey.html', context={'form': form})
 
 
-
 # @login_required
 def result(request):
     startpoint = request.POST['Start_point']
