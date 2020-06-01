@@ -6,6 +6,7 @@ from mpl_toolkits.basemap import Basemap
 import matplotlib.colors as colors
 from geopy.distance import geodesic
 from Trave_Route_Plotter.tsp_calculation import travellingSalesmanProblem
+from collections import OrderedDict
 
 
 class MapPoint:
@@ -134,6 +135,11 @@ def create_distance_matrix(map_points: list):
     return distance_matrix
 
 
+def remove_duplicates(places_list: list):
+    # from python3.7 dictionary is guaranteed to maintain insertion order
+    return list(dict.fromkeys(places_list))
+
+
 def get_places_sorted_for_best_route(places_list):
 
     if places_list[0] == places_list[-1]:
@@ -142,6 +148,7 @@ def get_places_sorted_for_best_route(places_list):
     else:
         round_trip = False
 
+    places_list = remove_duplicates(places_list)
     map_points_list = [MapPoint(name) for name in places_list]
 
 
@@ -173,7 +180,7 @@ def get_map_with_roads_as_basemap_graph(places_list: list):
 
 def main():
     # places_list = ["New York", "Washington DC", "Los Angeles", "San Francisco"]
-    places_list = ["katowice", "wrocław", "kraków", "warszawa", "opole"]
+    places_list = ["katowice", "wrocław", "kraków", "warszawa", "wrocław", "opole", "malbork", "katowice"]
 
     sorted_map_points_list = get_places_sorted_for_best_route(places_list)
 
