@@ -28,6 +28,7 @@ def user_logout(request):
     return HttpResponseRedirect(reverse('home'))
 
 
+@csrf_exempt
 def registration(request):
     registered = False
 
