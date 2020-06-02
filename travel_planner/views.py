@@ -46,7 +46,7 @@ def registration(request):
             registered = True
 
             if mobile:
-                return HttpResponse("Registered")
+                return HttpResponse(f"Registered,{user.username}")
 
         else:
             print(user_form.errors)
