@@ -34,6 +34,8 @@ def registration(request):
     if request.method == "POST":
         user_form = UserForm(request.POST)
 
+        mobile = request.POST.get('mobile')
+
         if user_form.is_valid():
 
             user = user_form.save()
@@ -41,6 +43,9 @@ def registration(request):
             user.save()
 
             registered = True
+
+            if mobile:
+                return HttpResponse("Registered")
 
         else:
             print(user_form.errors)
