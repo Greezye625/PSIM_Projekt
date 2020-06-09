@@ -32,7 +32,17 @@ def user_logout(request):
 @csrf_exempt
 def change_public_state(request):
     if request.method == "POST":
-        pass
+        route = TravelRoute.objects.get(pk=int(request.GET['id']))
+
+        if route.Public:
+            route.Public = False
+        else:
+            route.Public = True
+
+        route.save()
+
+    request.method = 'GET'
+    return result(request)
 
 
 @csrf_exempt

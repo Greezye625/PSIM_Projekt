@@ -18,12 +18,13 @@
                     </form>
                 {% else %}
                     <p>This route is not public</p>
-                    <form class="" action="{% url 'travel_planner:change_public' %}?id={{ route_obj.id }}" method="post">
+                    <form action="{% url 'travel_planner:change_public' %}?id={{ route_obj.id }}" method="post">
                         {% csrf_token %}
                         <input type="submit" class="btn btn-primary" value="Make Public">
                     </form>
                 {% endif %}
             {% endif %}
+            <p></p>
             <h2>Order of visiting:</h2>
             <p></p>
             {% if places_list %}
