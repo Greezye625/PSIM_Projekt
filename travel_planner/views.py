@@ -182,8 +182,6 @@ def poi(request):
         max_lon = request.GET['max_lon']
 
         points_of_interest = PointOfInterest.objects.filter(latitude__gt=min_lat, latitude__lt=max_lat, longitude__gt=min_lon, longitude__lt=max_lon)
-        poi_dict_list = [obj.to_dict() for obj in points_of_interest]
+        poi_dict_list = {obj.id: obj.to_dict() for obj in points_of_interest}
 
-        jsdata = json.dumps({"pois": poi_dict_list})
-
-        return JsonResponse(jsdata)
+        return JsonResponse(poi_dict_list)
