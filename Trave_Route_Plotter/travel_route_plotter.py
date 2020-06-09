@@ -168,14 +168,21 @@ def get_places_sorted_for_best_route(places_list):
 
 
 def get_map_with_roads_as_basemap_graph(places_list: list):
-    sorted_map_points_list = get_places_sorted_for_best_route(places_list)
 
+
+    sorted_map_points_list = [MapPoint(name) for name in places_list]
 
     map_to_draw = create_map_with_roads(sorted_map_points_list)
     plotted_map = draw_map(map_to_draw)
 
-    return plotted_map, [point.Name for point in sorted_map_points_list]
+    return plotted_map
 
+
+def get_best_road(places_list: list):
+    sorted_map_points_list = get_places_sorted_for_best_route(places_list)
+    result_list = [point.Name for point in sorted_map_points_list]
+
+    return result_list
 
 
 def main():

@@ -26,4 +26,7 @@ urlpatterns = [
     path('registration/', views.registration, name='registration'),
     path('user_login/', views.user_login, name='user_login'),
     path('user_logout/', views.user_logout, name='user_logout'),
+    path('user_profile_page/', views.user_profile_page, name='user_profile_page'),
+    path('change_public/', views.change_public_state, name='change_public'),
+    path('poi/', views.poi, name='poi'),
 ]

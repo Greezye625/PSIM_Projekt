@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -5,10 +7,10 @@ from Trave_Route_Plotter import travel_route_plotter
 import os
 from travel_planner.forms import NewTravelRouteForm, UserForm
 import re
-from travel_planner.models import TravelRoute, User
+from travel_planner.models import TravelRoute, User, PointOfInterest
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,11 +23,16 @@ def home(request):
     return render(request, 'home.html')
 
 
-
 # @login_required
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))
+
+
+@csrf_exempt
+def change_public_state(request):
+    if request.method == "POST":
+        pass
 
 
 @csrf_exempt
@@ -38,7 +45,6 @@ def registration(request):
         mobile = request.POST.get('mobile')
 
         if user_form.is_valid():
-
             user = user_form.save()
             user.set_password(user.password)
             user.save()
@@ -54,10 +60,8 @@ def registration(request):
     else:
         user_form = UserForm()
 
-
     return render(request, 'travel_planner/registration.html', context={'user_form': user_form,
                                                                         'registered': registered})
-
 
 
 # @login_required
@@ -66,9 +70,7 @@ def plan_journey(request):
     form = NewTravelRouteForm()
 
     if request.method == "POST":
-
         mobile = request.POST.get('mobile')
-
 
         form = NewTravelRouteForm(request.POST)
 
@@ -85,43 +87,61 @@ def plan_journey(request):
         else:
             print("Error")
 
-
-
     return render(request, 'travel_planner/plan_journey.html', context={'form': form})
 
 
 # @login_required
+@csrf_exempt
 def result(request):
-    startpoint = request.POST['Start_point']
-    places_list = [startpoint]
+    if request.method == "POST":
+        startpoint = request.POST['Start_point']
+        places_list = [startpoint]
 
-    if request.POST['Mid_points']:
-        midpoints = re.split(r"[,.\-_] *", request.POST['Mid_points'])
-        places_list += midpoints
+        if request.POST['Mid_points']:
+            midpoints = re.split(r"[,.\-_] *", request.POST['Mid_points'])
+            places_list += midpoints
 
-    endpoint = request.POST['End_point']
-    places_list.append(endpoint)
+        endpoint = request.POST['End_point']
+        places_list.append(endpoint)
 
-    places_list = [item.capitalize() for item in places_list]
+        places_list = [item.capitalize() for item in places_list]
 
-    plotted_map, places_list = travel_route_plotter.get_map_with_roads_as_basemap_graph(places_list)
+        places_list = travel_route_plotter.get_best_road(places_list)
 
-    last = TravelRoute.objects.last()
-    last.Route = places_list
-    last.save()
+        route_obj = TravelRoute.objects.last()
+        route_obj.Route = places_list
+        route_obj.save()
 
-    if request.POST.get('mobile'):
-        sorted_route_msg = ''
-        for point in places_list:
-            sorted_route_msg += f'{point},'
-        sorted_route_msg = sorted_route_msg[:-1]
+        if request.POST.get('mobile'):
+            sorted_route_msg = ''
+            for point in places_list:
+                sorted_route_msg += f'{point},'
+            sorted_route_msg = sorted_route_msg[:-1]
 
-        return HttpResponse(sorted_route_msg)
+            return HttpResponse(sorted_route_msg)
+
+        # plotted_map, places_list = travel_route_plotter.get_map_with_roads_as_basemap_graph(places_list)
+
+
+    elif request.method == "GET":
+        route_obj = TravelRoute.objects.get(pk=request.GET['id'])
+        places_list_str = route_obj.Route
+        re_list = re.findall(r'[a-ząćęłńóśżźA-ZĄĆĘŁŃÓŚŻŹ\s-]*', places_list_str)
+        places_list = list(filter(lambda x: x not in [' ', ''], re_list))
+
+    plotted_map = travel_route_plotter.get_map_with_roads_as_basemap_graph(places_list)
 
     plotted_map.savefig(os.path.join(RESULT_IMG_DIR, "result_map.png"), bbox_inches='tight', pad_inches=0)
+    context_dict = {'places_list': places_list, 'route_obj': route_obj}
 
-    places_dict = {'places_list': places_list}
-    return render(request, 'travel_planner/result.html', context=places_dict)
+    return render(request, 'travel_planner/result.html', context=context_dict)
+
+
+@csrf_exempt
+def user_profile_page(request):
+    user = request.user
+    routes = TravelRoute.objects.filter(User=user)
+    return render(request, 'travel_planner/user_profile_page.html', context={'routes': routes})
 
 
 @csrf_exempt
@@ -152,3 +172,18 @@ def user_login(request):
     else:
         return render(request, 'travel_planner/login.html', context={})
 
+
+@csrf_exempt
+def poi(request):
+    if request.method == "GET":
+        min_lat = request.GET['min_lat']
+        min_lon = request.GET['min_lon']
+        max_lat = request.GET['max_lat']
+        max_lon = request.GET['max_lon']
+
+        points_of_interest = PointOfInterest.objects.filter(latitude__gt=min_lat, latitude__lt=max_lat, longitude__gt=min_lon, longitude__lt=max_lon)
+        poi_dict_list = [obj.to_dict() for obj in points_of_interest]
+
+        jsdata = json.dumps({"pois": poi_dict_list})
+
+        return JsonResponse(jsdata)

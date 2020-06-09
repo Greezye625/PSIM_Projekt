@@ -3,9 +3,6 @@
 from sys import maxsize
 
 
-
-
-
 def travellingSalesmanProblem(matrix: list, start_point: int, round_trip: bool):
     # store all vertex apart from source and end vertex
     vertex = []
@@ -41,8 +38,6 @@ def travellingSalesmanProblem(matrix: list, start_point: int, round_trip: bool):
         if current_pathweight < min_path_cost:
             min_path_cost = current_pathweight
             min_path = [0] + vertex
-
-
 
         if not next_permutation(vertex):
             break

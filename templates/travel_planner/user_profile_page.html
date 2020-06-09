@@ -1,0 +1,28 @@
+<!doctype html>
+{% extends "travel_planner/base.html" %}
+{#{% load my_extras %}#}
+{% load static %}
+
+{% block body_block %}
+
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Welcome to your profile page {{ user }}!</h1>
+            <p></p>
+            <h2>placeholder</h2>
+            <p></p>
+            {% if routes %}
+                <ol>
+                    {% for route in routes %}
+
+                        <li><a href="{% url 'travel_planner:result' %}?id={{ route.id }}">{{ route }}</a></li>
+
+                    {% endfor %}
+                </ol>
+
+
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

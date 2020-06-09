@@ -7,9 +7,24 @@
 
     <div class="container">
         <div class="jumbotron">
-            <h1>Welcome to Result Page!</h1>
+            <h1>Your Travel Route</h1>
             <p></p>
-            <h>Order of visiting:</h>
+            {% if user == route_obj.User%}
+                {% if route_obj.Public %}
+                    <p>This route is public</p>
+                    <form class="" action="{% url 'travel_planner:change_public' %}?id={{ route_obj.id }}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary" value="Make Private">
+                    </form>
+                {% else %}
+                    <p>This route is not public</p>
+                    <form class="" action="{% url 'travel_planner:change_public' %}?id={{ route_obj.id }}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary" value="Make Public">
+                    </form>
+                {% endif %}
+            {% endif %}
+            <h2>Order of visiting:</h2>
             <p></p>
             {% if places_list %}
                 <ol>
