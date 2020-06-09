@@ -201,7 +201,7 @@ def get_best_road(places_list: list):
 
 def main():
     # places_list = ["New York", "Washington DC", "Los Angeles", "San Francisco"]
-    places_list = ["katowice", "katowice", "wrocław", "wrocław"]
+    places_list = ['Gdańsk', 'Kraków', 'Wrocław', 'Warszawa']
 
     sorted_map_points_list = get_places_sorted_for_best_route(places_list)
 

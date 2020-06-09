@@ -28,7 +28,7 @@
 
                 {% if user.is_authenticated %}
                     <li class="nav-item ">
-                        <a class="nav-link" href="{% url 'travel_planner:user_profile_page' %}">Profile</a>
+                        <a class="nav-link" href="{% url 'travel_planner:user_profile_page' %}">{{ user }}</a>
                     </li>
                     <li class="nav-item ">
                         <a class="nav-link" href="{% url 'travel_planner:plan_journey' %}">Planner</a>
@@ -38,8 +38,13 @@
 {#                <li class="nav-item">#}
 {#                    <a class="nav-link" href="{% url 'travel_planner:result' %}">Results</a>#}
 {#                </li>#}
+                {% if not user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'travel_planner:registration' %}">Registration</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'travel_planner:public_routes' %}">Public routes</a>
                 </li>
                 <li class="nav-item">
                     {% if user.is_authenticated %}

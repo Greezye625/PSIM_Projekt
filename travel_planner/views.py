@@ -149,9 +149,26 @@ def result(request):
 
 @csrf_exempt
 def user_profile_page(request):
-    user = request.user
+    if request.GET.get('mobile'):
+        user = User.objects.get(username=request.GET['username'])
+    else:
+        user = request.user
     routes = TravelRoute.objects.filter(User=user)
-    return render(request, 'travel_planner/user_profile_page.html', context={'routes': routes})
+
+    if request.GET.get('mobile'):
+        routes_dict = {obj.id: obj.to_dict() for obj in routes}
+        return JsonResponse(routes_dict)
+    else:
+        return render(request, 'travel_planner/user_profile_page.html', context={'routes': routes})
+
+@csrf_exempt
+def public_routes(request):
+    routes = TravelRoute.objects.filter(Public=True)
+    if request.GET.get('mobile'):
+        routes_dict = {obj.id: obj.to_dict() for obj in routes}
+        return JsonResponse(routes_dict)
+    else:
+        return render(request, 'travel_planner/public_routes.html', context={'routes': routes})
 
 
 @csrf_exempt
@@ -192,6 +209,6 @@ def poi(request):
         max_lon = request.GET['max_lon']
 
         points_of_interest = PointOfInterest.objects.filter(latitude__gt=min_lat, latitude__lt=max_lat, longitude__gt=min_lon, longitude__lt=max_lon)
-        poi_dict_list = {obj.id: obj.to_dict() for obj in points_of_interest}
+        poi_dict = {obj.id: obj.to_dict() for obj in points_of_interest}
 
-        return JsonResponse(poi_dict_list)
+        return JsonResponse(poi_dict)

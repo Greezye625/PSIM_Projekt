@@ -27,6 +27,15 @@ class TravelRoute(models.Model):
     def __str__(self):
         return f"{self.Start_point} - {self.Mid_points} - {self.End_point}"
 
+    def to_dict(self):
+        return {'User': self.User.username,
+                "Start_point": self.Start_point,
+                "Mid_points": self.Mid_points,
+                "End_point": self.End_point,
+                "Route": self.Route,
+                "Public": self.Public,
+                }
+
 
 
 class PointOfInterest(models.Model):

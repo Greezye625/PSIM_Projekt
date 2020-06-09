@@ -29,4 +29,5 @@ urlpatterns = [
     path('user_profile_page/', views.user_profile_page, name='user_profile_page'),
     path('change_public/', views.change_public_state, name='change_public'),
     path('poi/', views.poi, name='poi'),
+    path('public_routes/', views.public_routes, name='public_routes'),
 ]
