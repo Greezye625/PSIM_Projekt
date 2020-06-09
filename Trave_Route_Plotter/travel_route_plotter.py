@@ -135,28 +135,43 @@ def create_distance_matrix(map_points: list):
     return distance_matrix
 
 
-def remove_duplicates(places_list: list):
+def remove_duplicates(places_list: list, start: str ,end: str):
+
+    for index,value in enumerate(places_list):
+        if index not in [0, len(places_list)-1] and value in [start, end]:
+            places_list[index] = 'to_delete'
+
+
+    places_list = [item for item in places_list if item != 'to_delete']
+
     # from python3.7 dictionary is guaranteed to maintain insertion order
     return list(dict.fromkeys(places_list))
 
 
-def get_places_sorted_for_best_route(places_list):
 
+
+def get_places_sorted_for_best_route(places_list):
+    end = places_list[-1]
+    start = places_list[0]
     if places_list[0] == places_list[-1]:
-        places_list.pop(-1)
+        end = places_list.pop(-1)
         round_trip = True
     else:
         round_trip = False
 
-    places_list = remove_duplicates(places_list)
+    places_list = remove_duplicates(places_list, start, end)
     map_points_list = [MapPoint(name) for name in places_list]
 
+    if len(places_list)>2:
+        distance_matrix = create_distance_matrix(map_points_list)
 
-    distance_matrix = create_distance_matrix(map_points_list)
-
-    distance, order_of_visiting = travellingSalesmanProblem(matrix=distance_matrix,
-                                                            start_point=0,
-                                                            round_trip=round_trip)
+        distance, order_of_visiting = travellingSalesmanProblem(matrix=distance_matrix,
+                                                                start_point=0,
+                                                                round_trip=round_trip)
+    else:
+        order_of_visiting = [0,1]
+        if round_trip:
+            order_of_visiting.append(0)
 
     ordered_places_list = []
 
@@ -168,7 +183,6 @@ def get_places_sorted_for_best_route(places_list):
 
 
 def get_map_with_roads_as_basemap_graph(places_list: list):
-
 
     sorted_map_points_list = [MapPoint(name) for name in places_list]
 
@@ -187,7 +201,7 @@ def get_best_road(places_list: list):
 
 def main():
     # places_list = ["New York", "Washington DC", "Los Angeles", "San Francisco"]
-    places_list = ["katowice", "wrocław", "kraków", "warszawa", "wrocław", "opole", "malbork", "katowice"]
+    places_list = ["katowice", "katowice", "wrocław", "wrocław"]
 
     sorted_map_points_list = get_places_sorted_for_best_route(places_list)
 
